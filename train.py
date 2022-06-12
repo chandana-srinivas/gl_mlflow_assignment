@@ -54,17 +54,20 @@ if __name__ == '__main__':
     
     
     estimators= [10, 20, 30, 40]
+    max_features=['auto','sqrt']
 
     #mlflow.create_experiment("titanic")
     mlflow.set_experiment("titanic")
-    for f in range(len(estimators)):
-        
-        with mlflow.start_run():
-            n_estimators = estimators[f]
-            mlflow.log_param("n_estimators",n_estimators)
-            model = RandomForestClassifier(n_estimators=n_estimators,random_state=0)
-            train_model(model, X, y)
-            evaluate_model(model, X_test, y_test)
-            mlflow.sklearn.log_model(model, "RandomForestClassifier")
-            print("model run:", mlflow.active_run().info.run_uuid)
-        mlflow.end_run()
+    for max_feature in max_features:
+        for f in range(len(estimators)):
+            
+            with mlflow.start_run():
+                n_estimators = estimators[f]
+                mlflow.log_param("n_estimators",n_estimators)
+                mlflow.log_param("max_feature",max_feature)
+                model = RandomForestClassifier(n_estimators=n_estimators,max_features=max_feature ,random_state=0)
+                train_model(model, X, y)
+                evaluate_model(model, X_test, y_test)
+                mlflow.sklearn.log_model(model, "RandomForestClassifier")
+                print("model run:", mlflow.active_run().info.run_uuid)
+            mlflow.end_run()
